@@ -6,6 +6,8 @@ gem 'rails', '4.2.3'
 # Use postgresql as the database for Active Record
 gem 'pg'
 gem 'pry-rails'
+gem 'geokit-rails'
+gem 'geokit'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -42,4 +44,10 @@ group :development, :test do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+end
+
+group :development do
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'quiet_assets'
 end

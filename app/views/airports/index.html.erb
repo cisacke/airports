@@ -1,0 +1,73 @@
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+<script>
+
+$(function() {
+
+  var availableTags = <%= raw @airports.as_json %>
+  $( ".airport_a" ).autocomplete({
+    source: availableTags,
+    minLength: 3,
+    messages: {
+      noResults: '',
+      results: function() {}
+    }
+  });
+  $( ".airport_b" ).autocomplete({
+    source: availableTags,
+    minLength: 3
+  });
+});
+</script>
+
+<nav class="nav">
+  <div class="nav-wrapper">
+    <h1>Distance Between Two Airports</h1>
+  </div>
+</nav>
+<main class="main">
+  <div class="main-wrapper">
+    <ul class="group">
+      <li class="ui-widget destination">
+        <label for="tags">From: </label>
+        <input class="airport_a">
+      </li>
+
+      <li class="ui-widget destination">
+        <label for="tags">To: </label>
+        <input class="airport_b">
+      </li>
+      <li>
+        <button>find distance!</button>
+      </li>
+    </ul>
+    <p class="result-text">
+      The distance in miles is:
+    </p>
+    <div class="result">
+
+    </div>
+  </div>
+</main>
+
+
+<script type="text/javascript">
+
+  $("button").on("click", function() {
+    var airport_a = $(".airport_a").val();
+    var airport_b = $(".airport_b").val();
+    $.ajax({
+      url: "/airports/distance",
+      type: "GET",
+      data: {airport_a: airport_a, airport_b: airport_b},
+      dataType: "json",
+      success: function(model, resp, options) {
+        $(".result").text(model)
+      },
+      error: function() {
+        $(".result").text("please enter a valid airport!")
+      }
+    })
+  })
+</script>

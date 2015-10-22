@@ -49,7 +49,7 @@ $(function() {
     </ul>
     <div class="results-together">
       <p class="result-text">
-        The distance in nautical miles (nms) is:
+        The distance in nautical miles (NM) is:
       </p>
       <div class="result">
       </div>
@@ -74,7 +74,7 @@ $(function() {
       data: {airport_a: airport_a, airport_b: airport_b},
       dataType: "json",
       success: function(model, resp, options) {
-        $(".result").text(model + "/nms")
+        $(".result").text(model + " NM")
       },
       error: function() {
         $(".result").text("please enter a valid airport!")

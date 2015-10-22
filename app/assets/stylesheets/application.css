@@ -28,7 +28,6 @@
  body, html {
    font-family: sans-serif;
    height: 100%;
-   /*background: black;*/
  }
 
  ul {
@@ -49,7 +48,6 @@
     max-height: 100px;
     max-width: 300px;
     overflow-y: auto;
-    /* prevent horizontal scrollbar */
     overflow-x: hidden;
     border: 1px solid gray;
     cursor: pointer;
@@ -74,7 +72,9 @@
 
   .nav-wrapper {
     width: 80%;
-    min-width: 900px;
+    min-width: 860px;
+    padding-left: 20px;
+    padding-right: 20px;
     margin: auto;
     background: #E82C0C;
     border-left: 1px solid white;
@@ -116,9 +116,27 @@
   text-align: right;
   padding-right: 20px;
   margin-top: 10px;
+  width: 175px;
+  /*float: right;*/
 }
 
 .result-text {
   margin-top: 10px;
   text-align: right;
+  width: 175px;
+  /*float: right;*/
+}
+
+.results-together {
+  float: right;
+}
+
+.map-container {
+  margin-top: 125px;
+  width: 800px;
+}
+
+#map {
+  width: 800px;
+  height: 400px;
 }

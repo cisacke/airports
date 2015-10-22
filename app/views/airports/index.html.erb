@@ -74,7 +74,7 @@ $(function() {
       data: {airport_a: airport_a, airport_b: airport_b},
       dataType: "json",
       success: function(model, resp, options) {
-        $(".result").text(model + " NM")
+        $(".result").text(model)
       },
       error: function() {
         $(".result").text("please enter a valid airport!")

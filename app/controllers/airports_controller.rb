@@ -2,7 +2,7 @@ class AirportsController < ActionController::Base
   require 'rubygems'
   require 'geokit'
   include Geokit::Geocoders
-  Geokit::default_units = :nms  
+  Geokit::default_units = :nms
 
   def index
     @airports = []
@@ -20,7 +20,7 @@ class AirportsController < ActionController::Base
       @distance = distance_from(airport_a, airport_b)
       render json: @distance
     else
-      render json: "faulty"
+      render json: "please enter a valid airport"
     end
   end
 
@@ -44,7 +44,4 @@ class AirportsController < ActionController::Base
     return airport_a.distance_to(airport_b)
   end
 
-  def airports_params
-    params.require(:airport).permit(:airport_a, :airport_b)
-  end
 end

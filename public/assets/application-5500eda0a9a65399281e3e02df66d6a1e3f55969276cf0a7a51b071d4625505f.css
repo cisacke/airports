@@ -1,9 +1,5 @@
-/*
- *= require_self
- *= require_tree .
- */
-
 /* USER AGENT STYLESHEET RESET */
+
 
  body, p, img, html, ul, li, h3, nav, h1, form, div, h5, a, figure {
    border: 0px;

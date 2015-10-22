@@ -1,63 +1,47 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
-def lat_long_conv(lat)
-  if lat.split("")[-1] == "W" || lat.split("")[-1] == "S"
-    lat = lat.chomp("W")
-    split_lat = lat.split("-")
-    # p split_lat
-    split_lat.each_index do |idx|
-      if idx == 0
-        split_lat[idx] = split_lat[idx].to_i
-      elsif idx == 1
-        split_lat[idx] = (split_lat[idx].to_i / 60.0000)
-      else
-        split_lat[idx] = (split_lat[idx].to_i / 3600.00000)
-      end
+def read_file(file)
+  lines = []
+  File.readlines(file).each do |line|
+    lines << line
+  end
+  lines[0].split("\r")
+end
 
+def deg_to_dec(val)
+  if val.split("")[-1] == "W" || val.split("")[-1] == "S"
+    return (decimal_calculator(val).inject(:+) * -1).to_s
+  else
+    return decimal_calculator(val).inject(:+).to_s
+  end
+end
+
+def decimal_calculator(val)
+  split_val = val.chop.split("-")
+
+  split_val.each_index do |idx|
+    if idx == 0
+      split_val[idx] = split_val[idx].to_i
+    elsif idx == 1
+      split_val[idx] = (split_val[idx].to_i / 60.0)
+    else
+      split_val[idx] = (split_val[idx].to_f / 3600.0)
     end
-    return (split_lat.inject(:+) * -1).to_s
-    # negative
-  elsif lat.split("")[-1] == "E" || lat.split("")[-1] == "N"
-    lat = lat.chomp("E")
-    split_lat = lat.split("-")
-    # p split_lat
-    split_lat.each_index do |idx|
-      if idx == 0
-        split_lat[idx] = split_lat[idx].to_i
-      elsif idx == 1
-        split_lat[idx] = (split_lat[idx].to_i / 60.0000)
-      else
-        split_lat[idx] = (split_lat[idx].to_i / 3600.00000)
-      end
-    end
-    return split_lat.inject(:+).to_s
-    # positive
-end
-  # split_lat.inject(:+)
+  end
+  split_val
 end
 
-lines = []
-File.readlines('db/airports.txt').each do |line|
-  lines << line
-end
-split_lines = lines[0].split("\r")
-split_lines.each do |line|
-  new_line = line.split("\t")
-  state = new_line[0]
-  name = new_line[1]
-  code = new_line[2]
-  latitude = lat_long_conv(new_line[3])
-  p latitude
-  longitude = lat_long_conv(new_line[4])
-  p longitude
+airports = read_file("db/airports.txt")
 
-  # p new_line
-  Airport.create(state: state, name: name, code: code, latitude: latitude, longitude: longitude)
-end
+airports.each do |airport|
+  attributes = airport.split("\t")
+  state = attributes[0]
+  name = attributes[1]
+  code = attributes[2]
+  latitude = deg_to_dec(attributes[3])
+  longitude = deg_to_dec(attributes[4])
 
-# p new_line
+  Airport.create(state: state,
+                 name: name,
+                 code: code,
+                 latitude: latitude,
+                 longitude: longitude)
+end

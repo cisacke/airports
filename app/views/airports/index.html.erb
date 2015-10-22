@@ -4,27 +4,6 @@
 <script src='//google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.14/src/markerclusterer_packed.js' type='text/javascript'></script>
 <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
 <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
-<%= yield :javascripts %>
-
-<script>
-
-$(function() {
-
-  var availableTags = <%= raw @airports.as_json %>
-  $( ".airport_a" ).autocomplete({
-    source: availableTags,
-    minLength: 3,
-    messages: {
-      noResults: '',
-      results: function() {}
-    }
-  });
-  $( ".airport_b" ).autocomplete({
-    source: availableTags,
-    minLength: 3
-  });
-});
-</script>
 
 <nav class="nav">
   <div class="nav-wrapper">
@@ -62,77 +41,107 @@ $(function() {
   </div>
 </main>
 
+<script>
 
-<script type="text/javascript">
+  $(function() {
 
-  $("button").on("click", function() {
-    var airport_a = $(".airport_a").val();
-    var airport_b = $(".airport_b").val();
-    $.ajax({
-      url: "/airports/distance",
-      type: "GET",
-      data: {airport_a: airport_a, airport_b: airport_b},
-      dataType: "json",
-      success: function(model, resp, options) {
-        $(".result").text(model)
-      },
-      error: function() {
-        $(".result").text("please enter a valid airport!")
-      }
-    })
-  })
-</script>
+    var autoComplete = function() {
+      var availableTags = <%= raw @airports.as_json %>
 
+      $( ".airport_a" ).autocomplete({
+        source: availableTags,
+        minLength: 3
+      });
 
-<script type="text/javascript">
-  handler = Gmaps.build('Google');
-  handler.buildMap({ provider: {}, internal: {id: 'map'}}, function(){
-  // markers = handler.addMarkers(<%=raw @hash.to_json %>);
-  var markers = handler.addMarkers([
-    {
-      "lat": 38.5000,
-      "lng": -98,
-      "picture": {
-        "url": "https://addons.cdn.mozilla.net/img/uploads/addon_icons/13/13028-64.png",
-        "width":  36,
-        "height": 36
-      },
-    }
-  ]);
-  handler.bounds.extendWith(markers);
-  handler.fitMapToBounds();
-  handler.getMap().setZoom(4);
-  });
-  $("button").on("click", function() {
-    var airport_a = $(".airport_a").val();
-    var airport_b = $(".airport_b").val();
-    $.ajax({
-      url: "/airports/map",
-      type: "GET",
-      data: {airport_a: airport_a, airport_b: airport_b},
-      dataType: "json",
-      success: function(model, resp, options) {
-        handler = Gmaps.build('Google');
-        handler.buildMap({ provider: {}, internal: {id: 'map'}}, function(){
-        var markers = handler.addMarkers([
-          {"lat": model[0].lat, "lng": model[0].lng},
-          {"lat": model[1].lat, "lng": model[1].lng}
-        ]);
+      $( ".airport_b" ).autocomplete({
+        source: availableTags,
+        minLength: 3
+      });
+    };
+
+    var buildMap = function(mapPoints) {
+      handler = Gmaps.build('Google');
+      handler.buildMap({ provider: {}, internal: {id: 'map'}}, function(){
+        var markers = handler.addMarkers(mapPoints);
         handler.bounds.extendWith(markers);
         handler.fitMapToBounds();
         handler.getMap().setZoom(4);
-        var polylines = handler.addPolylines(
-            [
+        if (mapPoints.length > 1) {
+          var polylines = handler.addPolylines(
               [
-                {lat: model[0].lat, lng: model[0].lng},
-                {lat: model[1].lat, lng: model[1].lng}
-              ]
-            ],
-            { strokeColor: '#FF0000'}
-          );
-        });
+                [
+                  {lat: mapPoints[0].lat, lng: mapPoints[0].lng},
+                  {lat: mapPoints[1].lat, lng: mapPoints[1].lng}
+                ]
+              ],
+              { strokeColor: '#FF0000'}
+            );
+        }
+      });
+    };
 
-      }
-    })
+    var calculateDistance = function(airport_a, airport_b) {
+        $.ajax({
+          url: "/airports/distance",
+          type: "GET",
+          data: {airport_a: airport_a, airport_b: airport_b},
+          dataType: "json",
+          success: function(model, resp, options) {
+            $(".result").text(model)
+          },
+          error: function() {
+            $(".result").text("please enter a valid airport!")
+          }
+        })
+    };
+
+    var markMap = function(airport_a, airport_b) {
+        $.ajax({
+          url: "/airports/map",
+          type: "GET",
+          data: {airport_a: airport_a, airport_b: airport_b},
+          dataType: "json",
+          success: function(model, resp, options) {
+            mapPoints = [
+              {"lat": model[0].lat, "lng": model[0].lng},
+              {"lat": model[1].lat, "lng": model[1].lng}
+            ]
+            buildMap(mapPoints);
+          }
+        })
+    }
+
+    var handleClick = function() {
+      $("button").on("click", function() {
+        var airport_a = $(".airport_a").val();
+        var airport_b = $(".airport_b").val();
+        calculateDistance(airport_a, airport_b);
+        markMap(airport_a, airport_b);
+      })
+    }
+
+    var initialize = function() {
+      mapPoints = [
+        {
+          "lat": 38.5000,
+          "lng": -98,
+          "picture": {
+            "url": "https://addons.cdn.mozilla.net/img/uploads/addon_icons/13/13028-64.png",
+            "width":  36,
+            "height": 36
+          }
+        }
+      ]
+      autoComplete();
+      buildMap(mapPoints);
+      handleClick();
+    }
+
+    initialize();
+
+
+
   })
+
+
 </script>
